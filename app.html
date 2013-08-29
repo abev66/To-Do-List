@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html manifest='manifest.appcache'>
+<head>
+  <meta charset="utf-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, user-scalable=no" />
+  <title>待辦清單</title>
+  <!-- Building blocks -->
+  <link rel="stylesheet" href="style/action_menu.css">
+  <link rel="stylesheet" href="style/buttons.css">
+  <link rel="stylesheet" href="style/confirm.css">
+  <link rel="stylesheet" href="style/headers.css">
+  <link rel="stylesheet" href="style/input_areas.css">
+  <link rel="stylesheet" href="style/status.css">
+  <link rel="stylesheet" href="style/switches.css">
+  <link rel="stylesheet" href="style_unstable/drawer.css">
+  <link rel="stylesheet" href="style_unstable/lists.css">
+  <link rel="stylesheet" href="style_unstable/scrolling.css">
+  <link href="style_unstable/progress_activity.css" rel="stylesheet" type="text/css">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="icons/styles/action_icons.css">
+  <link rel="stylesheet" href="icons/styles/comms_icons.css">
+
+  <!-- Transitions -->
+  <link rel="stylesheet" href="transitions.css">
+  
+  <!-- Util CSS: some extra tricks -->
+  <link rel="stylesheet" href="util.css">
+  <link rel="stylesheet" href="fonts.css">
+
+  <!-- Additional markup to make Building Blocks kind of cross browser -->
+  <link rel="stylesheet" href="cross_browser.css">
+
+  <style>
+    #index {
+      height: 100%;
+    }
+    [data-position="right"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      transform: translateX(100%);
+      -webkit-transform: translateX(100%);
+      z-index: 15;
+      z-index: 100; /* -> drawer */
+    }
+    section[role="region"][data-position="right"] {
+      position: absolute;
+    }
+    [data-position="right"].current {
+      animation: rightToCurrent 1s forwards;
+      -webkit-animation: rightToCurrent 1s forwards;
+    }
+    [data-position="right"].right {
+      animation: currentToRight 1s forwards;
+      -webkit-animation: currentToRight 1s forwards;
+    }
+    [data-position="current"].left {
+      animation: currentToLeft 1s forwards;
+      -webkit-animation: currentToLeft 1s forwards;
+    }
+    [data-position="current"].current {
+      animation: leftToCurrent 1s forwards;
+      -webkit-animation: leftToCurrent 1s forwards;
+    }
+    [data-position="back"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: -1;
+      opacity: 0;
+      /* z-index: 100; -> drawer */
+    }
+    [data-position="back"].fade-in {
+      z-index: 120;
+      animation: fadeIn 1.4s forwards;
+      -webkit-animation: fadeIn 1.4s forwards;
+    }
+    [data-position="back"].fade-out {
+      animation: fadeOut 1.4s forwards;
+      -webkit-animation: fadeOut 1.4s forwards;
+    }
+
+    [data-position="edit-mode"] {
+      position: absolute;
+      top: -5rem;
+      left: 0;
+      right: 0;
+      bottom: -7rem;
+      z-index: -1;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+    [data-position="edit-mode"].edit {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 120;
+      opacity: 1;
+    }
+
+    /* Headers */
+    #headers section[role="region"] {
+      margin-bottom: 1.5rem;
+    }
+    #headers section[role="region"]:not(#drawer) {
+      display: inline;
+    }
+    #headers article header:first-child {
+      margin-top: 1.5rem;
+    }
+    #headers section[role="region"] header h2 {
+      margin: 0 0 1.5rem 0;
+    }
+
+    /* Drawer */
+    section[role="region"]:not(#drawer) {
+      transition: none;
+      left: 0;
+      z-index: 0;
+      padding-left: 0;
+    }
+    section[role="region"]:not(#drawer) > header:first-child {
+      margin-left: 0;
+    }
+    section[role="region"]:not(#drawer) > header:first-child h1 {
+      margin-left: 3rem;
+    }
+    section[role="region"]#drawer > header:first-child h1 {
+      margin-left: 4.5rem;
+    }
+    section[role="region"]:not(#drawer) > header:first-child > a {
+      width: 5rem;
+    }
+    section[role="region"]#drawer > header:first-child > a .icon {
+      width: 3.5rem;
+    }
+    section[data-type="sidebar"] + section[role="region"] > header:first-child > button, 
+    section[data-type="sidebar"] + section[role="region"] > header:first-child > a {
+      background-position: 3.5rem center;
+    }
+    section[role="region"]:not(#drawer) > header:first-child > a .icon:after {
+      width: 2rem;
+    }
+    section[role="region"]#drawer > header:first-child > a .icon:after {
+      width: 3.5rem;
+    }
+
+    /* Switches */
+    #switches label:last-child {
+      margin-left: 2rem;  
+    }
+
+    /* Scrolling */
+    nav[data-type="scrollbar"] {
+      padding-top: 1rem;
+    }
+    nav[data-type="scrollbar"] p {
+      opacity: 1;
+    }
+
+    /* Seek bars */
+    div[role="slider"] > label.icon {
+      background: no-repeat right top;
+      background-size: 3rem auto;
+    }
+    
+    /* Tabs */
+    #tabs .content {
+      padding: 0;
+    }
+    #tabs .content .content {
+      padding: 1.5rem 3rem;
+    }
+
+    /* Filters */
+    [role="tablist"][data-type="filter"] {
+      margin-bottom: 2rem;
+    }
+    
+    #task-list-f li a p {
+      text-decoration: line-through !important;
+      color: #AAA !important;
+    }
+    
+    #task-list li a p {
+      text-decoration: none !important;
+      color: #000 !important;
+    }
+
+    #dialog-ok {
+      float:right;
+    }
+    
+    progress {
+      display: block;
+      margin: 2em auto;
+    }
+  </style>
+</head>
+<body onload='refreshList()'>
+  <section id="index" data-position="current">
+    <section data-type="sidebar">
+      <header>
+        <menu type="toolbar">
+          <a href="#">←</a>
+        </menu>
+        <h1>功能表</h1>
+      </header>
+      <nav>
+        <ul>
+          <li><a href="#" id='btn-purge'>清除已完成</a></li>
+          <li><a href="#" id='btn-exit'>關閉</a></li>
+        </ul>
+        <h2>關於</h2>
+        <ul>
+          <li><a href="http://abev66.blogspot.com/" target="_blank">前往作者首頁…</a>
+          <li><a id='btn-about' href="#">關於<u>待辦清單</u>…</a></li>
+        </ul>
+      </nav>
+    </section>
+
+    <section id="drawer" role="region">
+      <header class="fixed">
+        <a href="#"><span class="icon icon-menu">hide sidebar</span></a>
+        <a href="#drawer"><span class="icon icon-menu">show sidebar</span></a>
+        <menu type="toolbar">
+            <a href="#" id='btn-newTask'><span class="icon icon-add">add</span></a>
+        </menu>
+        <h1>待辦清單</h1>
+      </header>
+      <article class="content scrollable header">
+        <div data-type="list">
+          <header>未完成</header>
+          <ul id='task-list'>
+	    <progress></progress>
+          </ul>
+          <p></p>
+          <header>已完成</header>
+          <ul id='task-list-f'>
+	    <progress></progress>
+          </ul>
+        </div>
+      </article>
+    </section> <!-- end drawer -->
+  </section> <!-- end index -->
+
+<!-- Edit Form -->
+  <section role="region" id="edit-form" data-position="right">
+    <header class="fixed">
+      <a id="btn-edit-form-back" href="#"><span class="icon icon-back">back</span></a>
+      <menu type='toolbar'>
+      	<button id="btn-remove">刪除</button>
+	<button id="btn-save">　好　</button>
+      </menu>
+      <h1 id='edit-title'>編輯畫面</h1>
+    </header>
+    
+    <article class="content scrollable header">
+      <form id='edform'>
+      	<header>
+        <p style='font-size: 1.7rem'>
+        <label>
+	  <input id='form-check' type="checkbox" value='0'/>
+	  <span></span>
+	</label>完成
+	</p>
+	  <h2>內容</h2>
+	</header>
+        <p>
+          <input type="text" id='form-title' placeholder="標題" required>
+        </p>
+        <p>
+          <textarea id='form-content' rows="5" placeholder="內容"></textarea>
+        </p>
+        <input id='tid' type='hidden' value=''>
+      </form>
+    </article>
+  </section>
+
+<!-- Delete Confirm -->
+  <section id="confirm" data-position="back" class="fullscreen">
+    <form role="dialog" data-type="confirm">
+      <section>
+        <h1>刪除確認</h1>
+        <p>你真的要刪除這個任務？ （這個動作無法復原）</p>
+      </section>
+      <menu>
+        <button id='confirm-cancel'>算了</button>
+        <button id='confirm-delete' class="danger">嗯</button>
+      </menu>
+    </form>
+  </section>
+  
+<!-- About Box -->
+  <section id="dialog" data-position="back" class="fullscreen">
+    <form role="dialog" data-type="confirm">
+      <section>
+	<h1>Aboutfish</h1>
+	<p>
+	  <img src="/icons/icon64.png" alt="Icon">
+	  <strong>待辦清單™ v1.0</strong>
+	  <small>史上最簡單的待辦清單程式！</small>
+	</p>
+	<p>By Wayne. Aug, 2013.</p>
+      </section>
+      <menu>
+	<button id='dialog-ok' class="recommend">好</button>
+      </menu>
+    </form>
+  </section>
+  
+<!-- Purge Confirm -->
+  <section id="purge" data-position="back" class="fullscreen">
+    <form role="dialog" data-type="confirm">
+      <section>
+        <h1>刪除確認</h1>
+        <p>你要清除所有已經完成的任務？ （這個動作無法復原）</p>
+      </section>
+      <menu>
+        <button id='purge-cancel'>算了</button>
+        <button id='purge-delete' class="danger">嗯</button>
+      </menu>
+    </form>
+  </section>
+  <script type="text/javascript" defer src="js/status.js"></script>
+  <script type="text/javascript" src="js/jquery-2.0.3.min.js"></script>
+  <script>
+
+  function refreshList() {
+    $('#task-list').empty();
+    $('#task-list-f').empty();
+    
+    if(typeof(localStorage.count) == 'undefined') {
+      localStorage.count = 0;
+    }
+    
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+    
+    for(var taskID in localStorage ) {
+      if(taskID == 'count')
+        continue;
+      taskObj = JSON.parse(localStorage[taskID])
+           
+      if(typeof(taskObj['title']) != 'undefined' ) {
+        if(taskObj['check'])
+          $('#task-list-f').append("<li id='"+taskID+"'><a class='btn-edit-form finished-task'  role='"+taskID+"'><p>"+escapeHtml(taskObj['title'])+"</p></a></li>");
+        else
+          $('#task-list').append("<li id='"+taskID+"'><a class='btn-edit-form' role='"+taskID+"'><p>"+escapeHtml(taskObj['title'])+"</p></a></li>");
+      }
+    }
+    
+    rebindActions();
+  }
+  
+  function purgeList() {
+    for(var taskID in localStorage ) {
+      if(taskID == 'count')
+        continue;
+      taskObj = JSON.parse(localStorage[taskID])
+      
+      if(typeof(taskObj['title']) != 'undefined' ) {
+        if(taskObj['check'])
+          delete localStorage[taskID];
+        else
+          continue;
+      }
+    }
+  }
+  
+  function loadTask(taskID) {
+    taskObj = JSON.parse(localStorage[taskID]);
+    $('#edit-title').text(taskObj['title']);
+    $('#form-title').val(taskObj['title']);
+    $('#form-content').val(taskObj['content']);
+    $('#tid').val(taskID);
+    if(taskObj['check']) 
+      $('#form-check')[0].checked = true ;
+    else
+      $('#form-check')[0].checked = false;
+  }
+  
+  function saveTask() {
+    taskObj = {
+      title : $('#form-title').val(),
+      content: $('#form-content').val(),
+      check: $('#form-check')[0].checked
+    };
+    
+    if(!($('#tid').val() in localStorage))
+      localStorage.count = parseInt(localStorage.count)+1;
+    
+    localStorage[$('#tid').val()] = JSON.stringify(taskObj);
+  }
+  
+  function removeTask() {
+    if($('#tid').val() in localStorage)
+      delete localStorage[$('#tid').val()];
+  }
+  
+      //edit form
+  function editAction(tid) {
+    loadTask(tid);
+    document.querySelector('#edit-form').className = 'current';
+    document.querySelector('[data-position="current"]').className = 'left';
+  }
+
+  var pressTimer, pressBool = false, touchY = false, touchBool = true;
+
+    function taskClick (self) {
+      loadTask($(self).attr('role'));
+      document.querySelector('#edit-form').className = 'current';
+      document.querySelector('[data-position="current"]').className = 'left';
+    }
+  
+  function rebindActions() {   
+    $(".btn-edit-form").bind('touchend',function(){
+      console.log('event:Touchend.');
+      $(this).css('background-color','transparent');
+      clearTimeout(pressTimer)
+      if(pressBool) {
+        pressBool = false;
+        return false;
+      } else
+        taskClick(this);
+    }).bind('touchmove', function(e) {
+      var touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+      if(touchY == false) {
+        touchY = touch.pageY;
+        return false;
+      }
+      var newTouchY = touch.pageY;
+      console.log('event:Moved.');
+       if((Math.abs(touchY-newTouchY) < 7)){
+         return false;
+       }
+       else {
+        current = $('article').scrollTop();
+        offset = touchY-newTouchY;
+        $('article').scrollTop(current+offset);
+        pressBool=true;
+        touchY=newTouchY;
+        clearTimeout(pressTimer)
+       }
+    }).bind('touchstart', function(){
+      // Remember Position
+      touchY = false;
+      $(this).css('background-color','#D0F7FF');
+      // Set timeout
+      pressTimer = window.setTimeout(
+        (function(self) {
+          return function() {
+            $(self).css('background-color','transparent');
+            loadTask($(self).attr('role'))
+	    $('#form-check')[0].checked = !($('#form-check')[0].checked);
+	    saveTask();
+	    if($('#form-check')[0].checked)
+	      $('#'+$(self).attr('role')).prependTo('#task-list-f');
+	    else
+	      $('#'+$(self).attr('role')).prependTo('#task-list');
+	    
+	    pressBool = true;
+          }
+        })(this) ,700)
+      return false; 
+    });
+
+  }
+    
+  document.querySelector('#btn-edit-form-back').addEventListener ('click', function () {
+    refreshList();
+    document.querySelector('#edit-form').className = 'right';
+    document.querySelector('[data-position="current"]').className = 'current';
+  });
+  
+  document.querySelector('#btn-save').addEventListener ( 'click', function () {
+      saveTask();
+      refreshList();
+      utils.status.show('存好了喔！ '); 
+      document.querySelector('#edit-form').className = 'right';
+      document.querySelector('[data-position="current"]').className = 'current';
+  });
+  
+  document.querySelector('#confirm-delete').addEventListener ( 'click', function () {
+      removeTask();
+      refreshList();
+      $('#confirm').attr('class','fade-out');
+      utils.status.show('刪掉了喔！ '); 
+      document.querySelector('#edit-form').className = 'right';
+      document.querySelector('[data-position="current"]').className = 'current';
+  });
+  
+  document.querySelector('#btn-newTask').addEventListener ( 'click', function () {
+    $('#edit-title').text('新任務');
+    $('#edform')[0].reset();
+    tid = parseInt(localStorage.count)+1
+    $('#tid').val("t" + tid.toString());
+    document.querySelector('#edit-form').className = 'current';
+    document.querySelector('[data-position="current"]').className = 'left';
+  });
+  
+  document.querySelector('#btn-remove').addEventListener ('click', function () {
+    document.querySelector('#confirm').className = 'fade-in';
+  });
+  
+  document.querySelector('#btn-purge').addEventListener ('click', function () {
+    document.querySelector('#purge').className = 'fade-in';
+  });
+  
+  document.querySelector('#confirm-cancel').addEventListener ('click', function () {
+    $('#confirm').attr('class','fade-out');
+  });
+  
+  document.querySelector('#purge-delete').addEventListener ( 'click', function () {
+      purgeList();
+      refreshList();
+      $('#purge').attr('class','fade-out');
+      utils.status.show('已完成的任務都被清除了！ '); 
+      document.querySelector('#edit-form').className = 'right';
+      document.querySelector('[data-position="current"]').className = 'current';
+  });
+  
+  document.querySelector('#purge-cancel').addEventListener ('click', function () {
+    $('#purge').attr('class','fade-out');
+  });
+  
+  document.querySelector('#btn-exit').addEventListener ('click', function () {
+    window.close();
+  });
+  
+  document.querySelector('#btn-about').addEventListener ('click', function () {
+    document.querySelector('#dialog').className = 'fade-in';
+  });
+  
+  document.querySelector('#dialog-ok').addEventListener ('click', function () {
+    $('#dialog').attr('class','fade-out');
+  });
+  
+</script>
+    <script src="js/app_installer.js"></script>
+</body>
+</html>
