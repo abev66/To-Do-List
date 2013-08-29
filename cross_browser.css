@@ -33,7 +33,7 @@ form[role="dialog"][data-type="confirm"] > section {
 
 form[role="dialog"][data-type="confirm"] menu {
   display: inline-block;
-  width: 100%;
+/*   width: 100%; */
 }
 
 form[role="dialog"][data-type="confirm"] menu button,

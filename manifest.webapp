@@ -1,11 +1,15 @@
 {
-  "name": "Building Blocks",
-  "description": "Building Blocks Demo App",
-  "launch_path": "/app.html",
-  "orientation": ["portrait"],
-  "developer": {
-    "name": "Arnau March",
-    "url": "http://buildingfirefoxos.com"
-  },
-  "default_locale": "en"
+    "version": "1.0",
+    "name": "待辦清單",
+    "launch_path": "/app.html",
+    "description": "史上最簡單的待辦清單程式！",
+    "icons":{
+      "64":"/icons/icon64.png"
+    },
+    "developer": {
+        "name": "Wayne Lai",
+        "url": "http://abev66.blogspot.com/"
+    },
+    "installs_allowed_from": ["*"],
+    "default_locale": "zh-TW"
 }
