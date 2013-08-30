@@ -199,6 +199,12 @@
       float:right;
     }
     
+    #flID, #uflID {
+        transition: opacity 500ms ease;
+        overflow: hidden;
+        display: block;
+    }
+    
     progress {
       display: block;
       margin: 2em auto;
@@ -377,7 +383,7 @@
     if(!ufTotal)
         $('#task-list').append("<p style='text-align: center; '>讚！沒有未完成的事情！ <img src='images/emo1.png' /></p>");
         
-    $('#flID').css('display',(fdTotal)?'block':'none');
+    $('#flID').css('opacity',(fdTotal)?'1':'0');
   
     rebindActions();
   }
