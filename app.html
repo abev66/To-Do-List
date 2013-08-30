@@ -337,7 +337,7 @@
   <script>
 
   function refreshList() {
-    var ufTotal = 0;
+    var ufTotal = 0, fdTotal = 0;
   
     $('#task-list').empty();
     $('#task-list-f').empty();
@@ -361,8 +361,10 @@
       taskObj = JSON.parse(localStorage[taskID])
            
       if(typeof(taskObj['title']) != 'undefined' ) {
-        if(taskObj['check'])
+        if(taskObj['check']){
           $('#task-list-f').append("<li id='"+taskID+"'><a class='btn-edit-form finished-task'  role='"+taskID+"'><p>"+escapeHtml(taskObj['title'])+"</p></a></li>");
+          fdTotal++;
+        }
         else {
           $('#task-list').append("<li id='"+taskID+"'><a class='btn-edit-form' role='"+taskID+"'><p>"+escapeHtml(taskObj['title'])+"</p></a></li>");
           ufTotal++;
@@ -373,6 +375,7 @@
     if(!ufTotal) {
         $('#task-list').append("<p style='text-align: center; '>讚！沒有未完成的事情！ <img src='images/emo1.png' /></p>");
     }
+    $('#task-list-f').css('display',(fdTotal)?'block':'none');
     
     rebindActions();
   }
