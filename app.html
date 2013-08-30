@@ -478,10 +478,7 @@
             loadTask($(self).attr('role'))
 	    $('#form-check')[0].checked = !($('#form-check')[0].checked);
 	    saveTask();
-	    if($('#form-check')[0].checked)
-	      $('#'+$(self).attr('role')).prependTo('#task-list-f');
-	    else
-	      $('#'+$(self).attr('role')).prependTo('#task-list');
+	    refreshList();
 	    
 	    pressBool = true;
           }
