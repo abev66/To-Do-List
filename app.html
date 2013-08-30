@@ -337,6 +337,8 @@
   <script>
 
   function refreshList() {
+    var ufTotal = 0;
+  
     $('#task-list').empty();
     $('#task-list-f').empty();
     
@@ -344,14 +346,14 @@
       localStorage.count = 0;
     }
     
-function escapeHtml(unsafe) {
-    return unsafe
-         .replace(/&/g, "&amp;")
-         .replace(/</g, "&lt;")
-         .replace(/>/g, "&gt;")
-         .replace(/"/g, "&quot;")
-         .replace(/'/g, "&#039;");
- }
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
     
     for(var taskID in localStorage ) {
       if(taskID == 'count')
@@ -361,9 +363,15 @@ function escapeHtml(unsafe) {
       if(typeof(taskObj['title']) != 'undefined' ) {
         if(taskObj['check'])
           $('#task-list-f').append("<li id='"+taskID+"'><a class='btn-edit-form finished-task'  role='"+taskID+"'><p>"+escapeHtml(taskObj['title'])+"</p></a></li>");
-        else
+        else {
           $('#task-list').append("<li id='"+taskID+"'><a class='btn-edit-form' role='"+taskID+"'><p>"+escapeHtml(taskObj['title'])+"</p></a></li>");
+          ufTotal++;
+        }
       }
+    }
+    
+    if(!ufTotal) {
+        $('#task-list').append("<p style='text-align: center; '>讚！沒有未完成的事情！ <img src='http://emos.plurk.com/44d5d9326be0f081f25f3f52a0742388_w48_h20.png' /></p>");
     }
     
     rebindActions();
