@@ -240,12 +240,12 @@
       </header>
       <article class="content scrollable header">
         <div data-type="list">
-          <header>未完成</header>
+          <header id='uflID'>未完成</header>
           <ul id='task-list'>
 	    <progress></progress>
           </ul>
           <p></p>
-          <header>已完成</header>
+          <header id='flID'>已完成</header>
           <ul id='task-list-f'>
 	    <progress></progress>
           </ul>
@@ -372,11 +372,13 @@
       }
     }
     
-    if(!ufTotal) {
-        $('#task-list').append("<p style='text-align: center; '>讚！沒有未完成的事情！ <img src='images/emo1.png' /></p>");
-    }
-    $('#task-list-f').css('display',(fdTotal)?'block':'none');
+    console.log("ufTotal:"+ufTotal+"\n"+"fdTotal:"+fdTotal);
     
+    if(!ufTotal)
+        $('#task-list').append("<p style='text-align: center; '>讚！沒有未完成的事情！ <img src='images/emo1.png' /></p>");
+        
+    $('#flID').css('display',(fdTotal)?'block':'none');
+  
     rebindActions();
   }
   
